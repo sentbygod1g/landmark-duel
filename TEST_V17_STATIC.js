@@ -1,0 +1,21 @@
+const fs=require('fs');const path=require('path');
+const root=__dirname;
+const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
+const app=fs.readFileSync(path.join(root,'public','app.js'),'utf8');
+const launcher=fs.readFileSync(path.join(root,'LAUNCH_TWITCH.js'),'utf8');
+const qs=JSON.parse(fs.readFileSync(path.join(root,'questions.json'),'utf8'));
+function must(x,msg){if(!x)throw new Error(msg)}
+must(qs.length===25,'question count');
+must(new Set(qs.map(q=>q.id)).size===25,'unique ids');
+must(server.includes('twitchRedirectForRequest(req)'),'dynamic Twitch redirect missing');
+must(server.includes('redirect_uri:saved.redirectUri'),'token exchange must reuse same redirect');
+must(app.includes('location.href=`${location.origin}/auth/twitch/start?return=${ret}`'),'client must start OAuth on same origin');
+must(!app.includes('http://localhost:3000/auth/twitch/start'),'remote OAuth still hardcoded localhost');
+must(launcher.includes('TWITCH REDIRECT TO ADD IN DEVELOPER CONSOLE'),'launcher must print redirect URL');
+must(server.includes("channel.chat.message"),'EventSub chat missing');
+must(server.includes("user:read:chat")&&server.includes("user:write:chat"),'chat scopes missing');
+console.log('PASS V17.2 STATIC');
+console.log('- remote Twitch OAuth no longer forces localhost');
+console.log('- OAuth callback dynamically uses the public tunnel origin');
+console.log('- token exchange reuses exact same redirect URI');
+console.log('- launcher prints the exact Twitch redirect URL to register');

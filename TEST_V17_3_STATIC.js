@@ -1,0 +1,22 @@
+const fs=require('fs');
+const path=require('path');
+const root=__dirname;
+function ok(cond,msg){ if(!cond){ console.error('FAIL:',msg); process.exit(1); } console.log('PASS:',msg); }
+const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
+const launch=fs.readFileSync(path.join(root,'LAUNCH_TWITCH.js'),'utf8');
+const app=fs.readFileSync(path.join(root,'public','app.js'),'utf8');
+const q=JSON.parse(fs.readFileSync(path.join(root,'questions.json'),'utf8'));
+ok(q.length===25,'25 questions');
+ok(new Set(q.map(x=>x.id)).size===25,'25 unique landmark IDs');
+ok(launch.includes("https://kekwig.tail0ffacc.ts.net"),'launcher uses stable Tailscale URL');
+ok(launch.includes("tailscale',['funnel','--bg','3000']"),'launcher starts Tailscale Funnel in background');
+ok(launch.includes('PUBLIC /health CHECK: PASS'),'launcher requires public health success before auto-open');
+ok(server.includes("u.hostname.endsWith('.ts.net')"),'server accepts ts.net public URL registration');
+ok(server.includes('/auth/twitch/callback'),'Twitch callback route exists');
+ok(server.includes('channel.chat.message'),'Twitch EventSub chat subscription exists');
+ok(app.includes('/auth/twitch/start'),'browser Twitch login route exists');
+ok(app.includes('serverPublicUrl||location.origin'),'room share link prefers server public URL');
+ok(!launch.includes('trycloudflare.com'),'launcher no longer depends on Cloudflare Quick Tunnel');
+ok(!fs.existsSync(path.join(root,'twitch_secret.txt')),'ZIP source contains no Twitch Client Secret');
+ok(!fs.existsSync(path.join(root,'twitch_session.json')),'ZIP source contains no Twitch session/token');
+console.log('PASS V17.3 STATIC');

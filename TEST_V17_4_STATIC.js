@@ -1,0 +1,21 @@
+const fs=require('fs');
+const path=require('path');
+const root=__dirname;
+const launch=fs.readFileSync(path.join(root,'LAUNCH_TWITCH.js'),'utf8');
+const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
+const q=JSON.parse(fs.readFileSync(path.join(root,'questions.json'),'utf8'));
+function ok(v,msg){if(!v){console.error('FAIL:',msg);process.exit(1)} console.log('PASS:',msg)}
+ok(q.length===25,'25 questions');
+ok(new Set(q.map(x=>x.id)).size===25,'25 unique landmark IDs');
+ok(!launch.includes('kekwig.tail0ffacc.ts.net'),'bad V17.3 hardcoded hostname removed');
+ok(!launch.includes('kekw1g.tail0ffa6c.ts.net'),'no hostname is hardcoded at all');
+ok(launch.includes("tailscale',['funnel','--bg','3000']"),'launcher starts Tailscale Funnel');
+ok(launch.includes('extractTailscalePublicUrl'),'launcher parses real Tailscale URL');
+ok(launch.includes("/https:\\/\\/[a-z0-9-]+\\.[a-z0-9-]+\\.ts\\.net/ig"),'parser accepts .ts.net Funnel URL');
+ok(launch.includes('publicUrl = extractTailscalePublicUrl(out)'),'parsed URL becomes runtime public URL');
+ok(launch.includes('JSON.stringify({url:publicUrl})'),'same URL is registered in server');
+ok(launch.includes('`${publicUrl}/auth/twitch/callback`'),'same URL is used for Twitch callback');
+ok(launch.includes('`${publicUrl}/health`'),'same URL is used for public health check');
+ok(server.includes("/auth/twitch/callback"),'Twitch callback route exists');
+ok(server.includes('channel.chat.message'),'EventSub Twitch chat exists');
+console.log('V17.4 STATIC CHECKS PASSED');

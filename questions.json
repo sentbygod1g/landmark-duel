@@ -1,0 +1,327 @@
+[
+  {
+    "id": "LM_0001",
+    "name": "Тадж Махал",
+    "question": "В коя държава се намира Тадж Махал?",
+    "answers": [
+      "Индия",
+      "Пакистан",
+      "Непал",
+      "Бангладеш"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Taj_Mahal_001.jpg?width=1600"
+  },
+  {
+    "id": "LM_0002",
+    "name": "Айфеловата кула",
+    "question": "В кой град се намира Айфеловата кула?",
+    "answers": [
+      "Париж, Франция",
+      "Лион, Франция",
+      "Брюксел, Белгия",
+      "Женева, Швейцария"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tour_Eiffel_Wikimedia_Commons.jpg?width=1600"
+  },
+  {
+    "id": "LM_0003",
+    "name": "Статуята на свободата",
+    "question": "В кой град се намира Статуята на свободата?",
+    "answers": [
+      "Ню Йорк, САЩ",
+      "Бостън, САЩ",
+      "Вашингтон, САЩ",
+      "Торонто, Канада"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Statue_of_Liberty_diagonal_front_shot.JPG?width=1600"
+  },
+  {
+    "id": "LM_0004",
+    "name": "Колизеумът",
+    "question": "В кой град се намира Колизеумът?",
+    "answers": [
+      "Рим, Италия",
+      "Атина, Гърция",
+      "Неапол, Италия",
+      "Флоренция, Италия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Colosseo_2020.jpg?width=1600"
+  },
+  {
+    "id": "LM_0005",
+    "name": "Петра",
+    "question": "В коя държава се намира древният град Петра?",
+    "answers": [
+      "Йордания",
+      "Египет",
+      "Ливан",
+      "Израел"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Al_Khazneh_Petra_edit_2.jpg?width=1600"
+  },
+  {
+    "id": "LM_0006",
+    "name": "Мачу Пикчу",
+    "question": "В коя държава се намира Мачу Пикчу?",
+    "answers": [
+      "Перу",
+      "Боливия",
+      "Еквадор",
+      "Чили"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/80_-_Machu_Picchu_-_Juin_2009_-_edit.jpg?width=1600"
+  },
+  {
+    "id": "LM_0007",
+    "name": "Христос Спасител",
+    "question": "В кой град се намира статуята Христос Спасител?",
+    "answers": [
+      "Рио де Жанейро, Бразилия",
+      "Сао Пауло, Бразилия",
+      "Буенос Айрес, Аржентина",
+      "Лима, Перу"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Christ_the_Redeemer_-_Cristo_Redentor.jpg?width=1600"
+  },
+  {
+    "id": "LM_0008",
+    "name": "Сидни Опера Хаус",
+    "question": "В кой град се намира тази опера?",
+    "answers": [
+      "Сидни, Австралия",
+      "Мелбърн, Австралия",
+      "Окланд, Нова Зеландия",
+      "Пърт, Австралия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sydney_Opera_House_Sails.jpg?width=1600"
+  },
+  {
+    "id": "LM_0009",
+    "name": "Бурж Халифа",
+    "question": "В кой град се намира Бурж Халифа?",
+    "answers": [
+      "Дубай, ОАЕ",
+      "Абу Даби, ОАЕ",
+      "Доха, Катар",
+      "Рияд, Саудитска Арабия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Burj_Khalifa.jpg?width=1600"
+  },
+  {
+    "id": "LM_0010",
+    "name": "Биг Бен",
+    "question": "В кой град се намира Биг Бен?",
+    "answers": [
+      "Лондон, Великобритания",
+      "Манчестър, Великобритания",
+      "Единбург, Великобритания",
+      "Дъблин, Ирландия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Elizabeth_Tower,_June_2022.jpg?width=1600"
+  },
+  {
+    "id": "LM_0011",
+    "name": "Саграда Фамилия",
+    "question": "В кой град се намира Саграда Фамилия?",
+    "answers": [
+      "Барселона, Испания",
+      "Мадрид, Испания",
+      "Валенсия, Испания",
+      "Лисабон, Португалия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sagrada_Familia_01.jpg?width=1600"
+  },
+  {
+    "id": "LM_0012",
+    "name": "Акрополът в Атина",
+    "question": "В кой град се намира този Акропол?",
+    "answers": [
+      "Атина, Гърция",
+      "Солун, Гърция",
+      "Спарта, Гърция",
+      "Истанбул, Турция"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Acropolis_of_Athens_01361.JPG?width=1600"
+  },
+  {
+    "id": "LM_0013",
+    "name": "Пирамидите в Гиза",
+    "question": "В коя държава се намират пирамидите в Гиза?",
+    "answers": [
+      "Египет",
+      "Судан",
+      "Мароко",
+      "Йордания"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/All_Gizah_Pyramids.jpg?width=1600"
+  },
+  {
+    "id": "LM_0014",
+    "name": "Великата китайска стена",
+    "question": "В коя държава се намира Великата китайска стена?",
+    "answers": [
+      "Китай",
+      "Монголия",
+      "Япония",
+      "Южна Корея"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/The_Great_Wall_of_China_at_Jinshanling-edit.jpg?width=1600"
+  },
+  {
+    "id": "LM_0015",
+    "name": "Ангкор Ват",
+    "question": "В коя държава се намира Ангкор Ват?",
+    "answers": [
+      "Камбоджа",
+      "Тайланд",
+      "Лаос",
+      "Виетнам"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Angkor_Wat.jpg?width=1600"
+  },
+  {
+    "id": "LM_0016",
+    "name": "Храмът Кийомидзу-дера",
+    "question": "В кой град се намира Кийомидзу-дера?",
+    "answers": [
+      "Киото, Япония",
+      "Токио, Япония",
+      "Осака, Япония",
+      "Нара, Япония"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Kiyomizu-dera_in_Kyoto-r.jpg?width=1600"
+  },
+  {
+    "id": "LM_0017",
+    "name": "Нойшванщайн",
+    "question": "В коя държава се намира замъкът Нойшванщайн?",
+    "answers": [
+      "Германия",
+      "Австрия",
+      "Швейцария",
+      "Чехия"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Schloss_Neuschwanstein_2013.jpg?width=1600"
+  },
+  {
+    "id": "LM_0018",
+    "name": "Мон Сен Мишел",
+    "question": "В коя държава се намира Мон Сен Мишел?",
+    "answers": [
+      "Франция",
+      "Белгия",
+      "Испания",
+      "Великобритания"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Mont-Saint-Michel_vu_du_ciel.jpg?width=1600"
+  },
+  {
+    "id": "LM_0019",
+    "name": "Чичен Ица",
+    "question": "В коя държава се намира Чичен Ица?",
+    "answers": [
+      "Мексико",
+      "Гватемала",
+      "Белиз",
+      "Перу"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chichen_Itza_3.jpg?width=1600"
+  },
+  {
+    "id": "LM_0020",
+    "name": "Моаи на Великденския остров",
+    "question": "Към коя държава принадлежи Великденският остров?",
+    "answers": [
+      "Чили",
+      "Перу",
+      "Аржентина",
+      "Еквадор"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Moai_Rano_raraku.jpg?width=1600"
+  },
+  {
+    "id": "LM_0021",
+    "name": "Голдън Гейт Бридж",
+    "question": "В кой град се намира Голдън Гейт Бридж?",
+    "answers": [
+      "Сан Франциско, САЩ",
+      "Лос Анджелис, САЩ",
+      "Сиатъл, САЩ",
+      "Сан Диего, САЩ"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Golden_Gate_Bridge_as_seen_from_Battery_East.jpg?width=1600"
+  },
+  {
+    "id": "LM_0022",
+    "name": "CN Tower",
+    "question": "В кой град се намира CN Tower?",
+    "answers": [
+      "Торонто, Канада",
+      "Ванкувър, Канада",
+      "Монреал, Канада",
+      "Отава, Канада"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Toronto_-_ON_-_CN_Tower_bei_Nacht.jpg?width=1600"
+  },
+  {
+    "id": "LM_0023",
+    "name": "Света София",
+    "question": "В кой град се намира Света София?",
+    "answers": [
+      "Истанбул, Турция",
+      "Анкара, Турция",
+      "Атина, Гърция",
+      "София, България"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Hagia_Sophia_Mars_2013.jpg?width=1600"
+  },
+  {
+    "id": "LM_0024",
+    "name": "Замъкът Химеджи",
+    "question": "В коя държава се намира замъкът Химеджи?",
+    "answers": [
+      "Япония",
+      "Китай",
+      "Южна Корея",
+      "Тайван"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Himeji_Castle_The_Keep_Towers.jpg?width=1600"
+  },
+  {
+    "id": "LM_0025",
+    "name": "Алхамбра",
+    "question": "В кой град се намира дворцовият комплекс Алхамбра?",
+    "answers": [
+      "Гранада, Испания",
+      "Севиля, Испания",
+      "Мадрид, Испания",
+      "Кордоба, Испания"
+    ],
+    "correct": 0,
+    "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Alhambra_evening_panorama_Mirador_San_Nicolas_sRGB-1.jpg?width=1600"
+  }
+]

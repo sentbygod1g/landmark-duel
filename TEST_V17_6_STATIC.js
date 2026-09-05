@@ -1,0 +1,23 @@
+const fs=require('fs');
+function ok(cond,msg){if(!cond){console.error('FAIL:',msg);process.exitCode=1}else console.log('PASS:',msg)}
+const server=fs.readFileSync('server.js','utf8');
+const app=fs.readFileSync('public/app.js','utf8');
+const launcher=fs.readFileSync('LAUNCH_TWITCH.js','utf8');
+const questions=JSON.parse(fs.readFileSync('questions.json','utf8'));
+ok(questions.length===25,'25 questions present');
+ok(new Set(questions.map(q=>q.id)).size===25,'25 unique landmark IDs');
+ok(server.includes("resumeToken:crypto.randomBytes(24).toString('hex')"),'server creates secure room resume token');
+ok(server.includes("data.type==='resume_room'"),'server supports room resume');
+ok(server.includes('schedulePlayerCleanup(room,p)'),'disconnect gets 2-minute grace instead of immediate room deletion');
+ok(!server.includes("room.phase='disconnected'"),'disconnect no longer destroys active room phase');
+ok(server.includes("ws.on('pong'"),'WebSocket pong heartbeat enabled');
+ok(server.includes('ws.ping()'),'WebSocket ping keepalive enabled');
+ok(server.includes("version:'V17.6'"),'WebSocket hello reports V17.6');
+ok(app.includes("const RESUME_KEY='landmark_duel_room_resume_v176'"),'browser persists resume token');
+ok(app.includes("wsSend({type:'resume_room'"),'browser automatically resumes room');
+ok(app.includes('reconnectDelay=Math.min(10000'),'browser auto reconnect uses bounded backoff');
+ok(app.includes("players.every(p=>p.connected)"),'start UI requires both players connected');
+ok(server.includes("room.players.every(x=>x.ws&&x.ws.readyState===WebSocket.OPEN)"),'server refuses start unless both sockets are connected');
+ok(launcher.includes('V17.6 STABLE PUBLIC LINK:'),'launcher label updated to V17.6');
+ok(!launcher.includes('V17.4 STABLE PUBLIC LINK:'),'no stale V17.4 launcher label');
+if(process.exitCode)process.exit(process.exitCode);

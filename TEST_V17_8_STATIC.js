@@ -1,0 +1,22 @@
+const fs=require('fs');
+const path=require('path');
+const root=__dirname;
+const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
+const app=fs.readFileSync(path.join(root,'public','app.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'public','index.html'),'utf8');
+const qs=JSON.parse(fs.readFileSync(path.join(root,'questions.json'),'utf8'));
+function ok(x,m){if(!x)throw new Error('FAIL: '+m);console.log('PASS:',m)}
+ok(qs.length===25,'25 questions');
+ok(new Set(qs.map(q=>q.id)).size===25,'25 unique landmark IDs');
+ok(server.includes('/api/landmark-image/'),'server-side landmark image endpoint');
+ok(server.includes('resolveCommonsFallback'),'Wikimedia fallback resolver');
+ok(server.includes('IMAGE_CACHE_DIR'),'persistent image cache');
+ok(server.includes("avatar:p.avatar||''"),'avatar is part of room state');
+ok(server.includes("country:p.country||''"),'country is part of room state');
+ok(html.includes('id="p2Avatar"'),'Player 2 avatar element');
+ok(html.includes('id="p1Country"')&&html.includes('id="p2Country"'),'country labels for both players');
+ok(app.includes("setAvatar('p2Avatar'"),'opponent avatar rendering');
+ok(app.includes("country:($('countryInput').value||'').trim()"),'country sent to server');
+ok(server.includes('350 + Math.round((seconds/60)*250)'),'350 base + up to 250 speed bonus');
+ok(server.includes('if(roundNo>=21)return 2')&&server.includes('if(roundNo>=16)return 1.5')&&server.includes('if(roundNo>=11)return 1.25'),'damage multipliers');
+console.log('V17.8 STATIC TESTS COMPLETE');

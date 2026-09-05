@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: landmark-duel
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: TWITCH_CLIENT_SECRET
+        sync: false
+      - key: TWITCH_CLIENT_ID
+        value: cc5te66gm5qmewa3pz1cfuqhcfx28i

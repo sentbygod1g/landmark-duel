@@ -1,0 +1,12 @@
+const fs=require('fs'),assert=require('assert');
+const s=fs.readFileSync('server.js','utf8'),a=fs.readFileSync('public/app.js','utf8');
+assert(s.includes('browserTwitchSessions = new Map()'));
+assert(s.includes('browserSessionStatus(sid)'));
+assert(s.includes('browserTwitchSessions.set(saved.sid,playerSession)'));
+assert(s.includes("if(!twitchSession){twitchSession={...playerSession}"));
+assert(s.includes('twitch_broadcaster_v17_5.json'));
+assert(a.includes('encodeURIComponent(location.href)'));
+assert(s.includes("back.searchParams.set('twitch','connected')"));
+assert(a.includes("qs.get('twitch')==='connected'"));
+assert(a.includes('refreshTwitchStatus().finally(connect)'));
+console.log('V17.5 static checks PASS: per-browser Twitch sessions + room return preserved + auto rejoin.');
