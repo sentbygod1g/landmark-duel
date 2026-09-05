@@ -61,6 +61,14 @@ function calcDamage(roundNo, remainingMs){
   const seconds=Math.max(0,Math.min(60,remainingMs/1000));
   return Math.round((350 + Math.round((seconds/60)*250)) * multiplier(roundNo));
 }
+function nextSuddenDeathQuestion(room){
+  // The normal 25-question pool is exhausted here, so Sudden Death starts World Cycle #2.
+  if(!Array.isArray(room.suddenPool) || room.suddenIndex>=room.suddenPool.length){
+    room.suddenPool=shuffle(QUESTIONS);
+    room.suddenIndex=0;
+  }
+  return room.suddenPool[room.suddenIndex++];
+}
 function send(ws,obj){ if(ws && ws.readyState===WebSocket.OPEN) ws.send(JSON.stringify(obj)); }
 function broadcast(room,obj){ room.players.forEach(p=>send(p.ws,obj)); }
 function broadcastAll(obj){ wss.clients.forEach(ws=>send(ws,obj)); }
@@ -103,19 +111,20 @@ function syncRoomToPlayer(room,p){
   if(room.phase==='ended'&&room.lastMatchEndPayload)send(p.ws,room.lastMatchEndPayload);
 }
 
-function currentQuestion(room){ return room.pool[room.roundIndex]; }
+function currentQuestion(room){ return room.suddenDeath ? room.suddenQuestion : room.pool[room.roundIndex]; }
 function publicQuestion(q){ return {id:q.id,name:q.name,question:q.question,answers:q.answers,image:`/api/landmark-image/${encodeURIComponent(q.id)}`}; }
 function resetPlayerRound(p){ p.answer=null;p.lockedAt=null;p.voiceDone=false;p.resultVoiceDone=false; }
 function startMatch(room){
   if(room.players.length!==2 || room.phase!=='lobby') return;
-  room.pool=shuffle(QUESTIONS).slice(0,MATCH_QUESTIONS); room.roundIndex=0;
+  room.pool=shuffle(QUESTIONS).slice(0,MATCH_QUESTIONS); room.roundIndex=0; room.suddenDeath=false; room.suddenRound=0; room.suddenPool=[]; room.suddenIndex=0; room.suddenQuestion=null;
   room.players.forEach(p=>{p.hp=MAX_HP;p.fiftyUsed=false;p.friendUsed=false;}); beginRound(room);
 }
 function beginRound(room){
   if(room.roundTimer)clearTimeout(room.roundTimer); if(room.advanceTimer)clearTimeout(room.advanceTimer);
   room.phase='voice';room.deadline=0;room.players.forEach(resetPlayerRound);
   const q=currentQuestion(room);
-  room.lastQuestionPayload={type:'round_question',roundNo:room.roundIndex+1,total:MATCH_QUESTIONS,multiplier:multiplier(room.roundIndex+1),question:publicQuestion(q),players:room.players.map(playerPublic)};
+  const displayRound=room.suddenDeath?MATCH_QUESTIONS+room.suddenRound:room.roundIndex+1;
+  room.lastQuestionPayload={type:'round_question',roundNo:displayRound,total:MATCH_QUESTIONS,multiplier:multiplier(displayRound),suddenDeath:!!room.suddenDeath,suddenRound:room.suddenRound||0,question:publicQuestion(q),players:room.players.map(playerPublic)};
   room.lastResultPayload=null;
   broadcast(room,room.lastQuestionPayload);
   sendRoomState(room);
@@ -129,28 +138,71 @@ function maybeStartTimer(room){
 function revealRound(room,timeout=false){
   if(room.phase!=='answer')return;room.phase='reveal';
   if(room.roundTimer){clearTimeout(room.roundTimer);room.roundTimer=null;}
-  const q=currentQuestion(room),roundNo=room.roundIndex+1;
+  const q=currentQuestion(room),roundNo=room.suddenDeath?MATCH_QUESTIONS+room.suddenRound:room.roundIndex+1;
+  const hpBefore=new Map(room.players.map(p=>[p.id,p.hp]));
   const results=room.players.map(p=>{
     const answered=Number.isInteger(p.answer),correct=answered&&p.answer===q.correct;
     const remaining=p.lockedAt?Math.max(0,room.deadline-p.lockedAt):0;
-    return {id:p.id,name:p.name,answered,correct,damage:correct?calcDamage(roundNo,remaining):0};
+    const rawDamage=correct?calcDamage(roundNo,remaining):0;
+    const opponent=room.players.find(x=>x.id!==p.id);
+    const actualDamage=correct?Math.min(rawDamage,hpBefore.get(opponent.id)):0;
+    return {id:p.id,name:p.name,answered,correct,damage:actualDamage,rawDamage,lockedAt:p.lockedAt||null,remainingMs:remaining};
   });
-  for(const r of results){ if(!r.correct)continue; const opponent=room.players.find(p=>p.id!==r.id); opponent.hp=Math.max(0,opponent.hp-r.damage); }
-  room.lastResultPayload={type:'round_result',roundNo,correctIndex:q.correct,correctAnswer:q.answers[q.correct],timeout,results,players:room.players.map(playerPublic)};
+  // Damage is simultaneous: both hits are calculated from the HP snapshot before the reveal.
+  const hpAfter=new Map(hpBefore);
+  for(const r of results){ if(!r.correct)continue; const opponent=room.players.find(p=>p.id!==r.id); hpAfter.set(opponent.id,Math.max(0,hpBefore.get(opponent.id)-r.damage)); }
+  for(const p of room.players)p.hp=hpAfter.get(p.id);
+  room.lastResultPayload={type:'round_result',roundNo,suddenDeath:!!room.suddenDeath,suddenRound:room.suddenRound||0,correctIndex:q.correct,correctAnswer:q.answers[q.correct],timeout,results,players:room.players.map(playerPublic)};
   broadcast(room,room.lastResultPayload);
   sendRoomState(room);room.advanceTimer=setTimeout(()=>advanceAfterResult(room),15000);
 }
+function decideDoubleKoWinner(room){
+  const r=room.lastResultPayload?.results||[];
+  const correct=r.filter(x=>x.correct&&x.lockedAt);
+  if(correct.length===2 && correct[0].lockedAt!==correct[1].lockedAt){
+    return correct[0].lockedAt<correct[1].lockedAt?correct[0].id:correct[1].id;
+  }
+  if(correct.length===2 && correct[0].rawDamage!==correct[1].rawDamage){
+    return correct[0].rawDamage>correct[1].rawDamage?correct[0].id:correct[1].id;
+  }
+  return null;
+}
+function startSuddenDeath(room){
+  room.suddenDeath=true; room.suddenRound=(room.suddenRound||0)+1; room.suddenQuestion=nextSuddenDeathQuestion(room); beginRound(room);
+}
 function advanceAfterResult(room){
   if(room.phase!=='reveal')return;if(room.advanceTimer){clearTimeout(room.advanceTimer);room.advanceTimer=null;}
-  const dead=room.players.some(p=>p.hp<=0),last=room.roundIndex>=MATCH_QUESTIONS-1;
-  if(dead||last)return endMatch(room);room.roundIndex++;beginRound(room);
+  const dead=room.players.filter(p=>p.hp<=0);
+  if(dead.length===1)return endMatch(room,room.players.find(p=>p.hp>0)?.id||null,'KO');
+  if(dead.length===2){
+    const winnerId=decideDoubleKoWinner(room);
+    if(winnerId)return endMatch(room,winnerId,'DOUBLE_KO_SPEED');
+    // Exact simultaneous double KO: restore 1 HP each and decide it with Sudden Death.
+    room.players.forEach(p=>p.hp=1); return startSuddenDeath(room);
+  }
+  if(room.suddenDeath){
+    if(room.players[0].hp!==room.players[1].hp){
+      const winnerId=room.players[0].hp>room.players[1].hp?room.players[0].id:room.players[1].id;
+      return endMatch(room,winnerId,'SUDDEN_DEATH');
+    }
+    return startSuddenDeath(room);
+  }
+  const last=room.roundIndex>=MATCH_QUESTIONS-1;
+  if(last){
+    if(room.players[0].hp!==room.players[1].hp){
+      const winnerId=room.players[0].hp>room.players[1].hp?room.players[0].id:room.players[1].id;
+      return endMatch(room,winnerId,'HP');
+    }
+    return startSuddenDeath(room);
+  }
+  room.roundIndex++;beginRound(room);
 }
 function maybeAdvanceAfterVoice(room){ if(room.phase==='reveal'&&room.players.every(p=>p.resultVoiceDone))advanceAfterResult(room); }
-function endMatch(room){
+function endMatch(room,winnerId=null,reason='HP'){
   room.phase='ended';if(room.roundTimer)clearTimeout(room.roundTimer);if(room.advanceTimer)clearTimeout(room.advanceTimer);
-  let winnerId=null;if(room.players[0].hp>room.players[1].hp)winnerId=room.players[0].id;else if(room.players[1].hp>room.players[0].hp)winnerId=room.players[1].id;
+  if(!winnerId){if(room.players[0].hp>room.players[1].hp)winnerId=room.players[0].id;else if(room.players[1].hp>room.players[0].hp)winnerId=room.players[1].id;}
   const winner=winnerId?room.players.find(p=>p.id===winnerId):null;
-  room.lastMatchEndPayload={type:'match_end',winnerId,winnerName:winner?winner.name:null,players:room.players.map(playerPublic),roundsPlayed:room.roundIndex+1};
+  room.lastMatchEndPayload={type:'match_end',winnerId,winnerName:winner?winner.name:null,reason,players:room.players.map(playerPublic),roundsPlayed:room.suddenDeath?MATCH_QUESTIONS+room.suddenRound:room.roundIndex+1};
   broadcast(room,room.lastMatchEndPayload);sendRoomState(room);
 }
 
@@ -158,7 +210,7 @@ function handleMessage(ws,msg){
   let data;try{data=JSON.parse(msg.toString())}catch{return fail(ws,'Невалидно съобщение.');}
   if(data.type==='create_room'){
     if(ws.roomCode)return fail(ws,'Вече си в стая.');
-    const code=roomCode(),p=createPlayer(ws,roomNameForWs(ws,data.name),data.country);const room={code,hostId:p.id,players:[p],phase:'lobby',pool:[],roundIndex:0,deadline:0,roundTimer:null,advanceTimer:null,lastQuestionPayload:null,lastResultPayload:null,lastMatchEndPayload:null};
+    const code=roomCode(),p=createPlayer(ws,roomNameForWs(ws,data.name),data.country);const room={code,hostId:p.id,players:[p],phase:'lobby',pool:[],roundIndex:0,suddenDeath:false,suddenRound:0,suddenPool:[],suddenIndex:0,suddenQuestion:null,deadline:0,roundTimer:null,advanceTimer:null,lastQuestionPayload:null,lastResultPayload:null,lastMatchEndPayload:null};
     rooms.set(code,room);attach(ws,room,p);send(ws,{type:'joined',playerId:p.id,code,host:true,resumeToken:p.resumeToken});sendRoomState(room);return;
   }
   if(data.type==='join_room'){

@@ -190,7 +190,8 @@ async function speak(text){
 async function receiveQuestion(d){
   currentQ=d.question;roundNo=d.roundNo;totalRounds=d.total;locked=false;resolved=false;
   clearInterval(timerInterval);deadline=0;setTimer(60,'waiting');setDamage(d.multiplier);
-  const remain=totalRounds-roundNo+1;$('roundNow').textContent=remain;$('questionsLeft').textContent=remain;
+  const remain=d.suddenDeath?'SD':Math.max(0,totalRounds-roundNo+1);$('roundNow').textContent=remain;$('questionsLeft').textContent=remain;
+  if(d.suddenDeath)$('feedback').textContent=`⚡ SUDDEN DEATH #${d.suddenRound} — няма равен мач`;
   players=d.players||players;renderPlayers();
   $('p1Status').textContent='СЛУША';$('p2Status').textContent='СЛУША';
   $('syncStatus').textContent='И ДВАМАТА СЛУШАТ';
@@ -255,7 +256,7 @@ async function showResult(d){
   saveProfile();
   const a=mine?.correct?`✅ ТИ: ПРАВИЛНО · ТИ СВАЛИ -${mine.damage} HP НА ${opp?.name||'ПРОТИВНИКА'}`:mine?.answered?'❌ ТИ: ГРЕШНО':'⌛ ТИ: НЯМА ОТГОВОР';
   const b=opp?.correct?`✅ ${opp.name}: ПРАВИЛНО · ТОЙ ТИ СВАЛИ -${opp.damage} HP`:opp?.answered?`❌ ${opp.name}: ГРЕШНО`:`⌛ ${opp.name}: НЯМА ОТГОВОР`;
-  $('feedback').textContent=`${a} | ${b} | HP ${mePlayer.hp} : ${opPlayer.hp} | Верният: ${d.correctAnswer}`;
+  $('feedback').textContent=`${d.suddenDeath?'⚡ SUDDEN DEATH | ':''}${a} | ${b} | HP ${mePlayer.hp} : ${opPlayer.hp} | Верният: ${d.correctAnswer}`;
   $('syncStatus').textContent='ROUND RESULT';
   await speak(`${mine?.correct?'Правилно':'Грешно'}. Верният отговор е ${d.correctAnswer}.`);
   wsSend({type:'result_voice_done'});
