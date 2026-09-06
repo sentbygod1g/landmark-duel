@@ -39,7 +39,7 @@ function normalizedPhoto(p){
   if(!url && p.fileurl) url=String(p.fileurl).replace('[[sizeprefix]]','wrapped_proc');
   return {id:String(p.id||''),sequenceId:String(p.sequenceId||p.sequence?.id||''),sequenceIndex:Number(p.sequenceIndex||0),lat:Number(p.lat),lng:Number(p.lng),heading:Number(p.heading||0),url,projection,fov};
 }
-async function fetchJson(url){ const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),10000); try{const r=await fetch(url,{headers:{'User-Agent':'LandmarkDuel/20.1'},signal:ctrl.signal}); if(!r.ok)throw new Error('HTTP '+r.status); return await r.json();} finally{clearTimeout(t);} }
+async function fetchJson(url){ const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),10000); try{const r=await fetch(url,{headers:{'User-Agent':'LandmarkDuel/20.2'},signal:ctrl.signal}); if(!r.ok)throw new Error('HTTP '+r.status); return await r.json();} finally{clearTimeout(t);} }
 async function loadKartaPage(){
   const seq=KARTAVIEW_SEQUENCES[Math.floor(Math.random()*KARTAVIEW_SEQUENCES.length)];
   const page=1+Math.floor(Math.random()*16);
@@ -93,7 +93,18 @@ function handle(ws,msg){
     if(room.demo){const bot=makePlayer(null,'Geo Bot',true);room.players.push(bot);} send(ws,{type:'joined',playerId:p.id,code,host:true});sendState(room); if(room.demo)beginRound(room).catch(e=>send(ws,{type:'error',message:e.message})); return;
   }
   if(d.type==='join_room'){
-    const room=rooms.get(String(d.code||'').toUpperCase()); if(!room||room.phase!=='lobby'||room.players.length>=2)return send(ws,{type:'error',message:'Стаята не е налична.'}); const p=makePlayer(ws,d.name);room.players.push(p);attach(ws,room,p);send(ws,{type:'joined',playerId:p.id,code:room.code,host:false});sendState(room);return;
+    const code=String(d.code||'').trim().toUpperCase();
+    const room=rooms.get(code);
+    // Idempotent JOIN: a double click / repeated JOIN must never turn a successful join into an error.
+    if(ws.roomCode===code){
+      const existing=room?.players.find(x=>x.id===ws.playerId);
+      if(existing){send(ws,{type:'joined',playerId:existing.id,code:room.code,host:existing.id===room.hostId});sendState(room);return;}
+    }
+    if(!room)return send(ws,{type:'error',message:'Стаята не е намерена. Провери 6-знаковия код.'});
+    if(room.phase!=='lobby')return send(ws,{type:'error',message:'Мачът в тази стая вече е започнал.'});
+    if(room.players.length>=2)return send(ws,{type:'error',message:'Стаята вече има 2 играчи.'});
+    const p=makePlayer(ws,d.name);room.players.push(p);attach(ws,room,p);
+    send(ws,{type:'joined',playerId:p.id,code:room.code,host:false});sendState(room);return;
   }
   const room=rooms.get(ws.roomCode); if(!room)return;
   if(d.type==='start_match'){if(ws.playerId!==room.hostId||room.players.length!==2)return;room.players.forEach(p=>p.hp=MAX_HP);room.roundNo=1;room.suddenDeath=false;return beginRound(room).catch(e=>broadcast(room,{type:'error',message:e.message}));}
@@ -107,7 +118,7 @@ function handle(ws,msg){
 
 const server=http.createServer(async (req,res)=>{
   const url=new URL(req.url,'http://localhost');
-  if(url.pathname==='/api/health'||url.pathname==='/health'){res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify({ok:true,mode:'geo-duel-v20.1-render',provider:'KartaView + OpenStreetMap',apiKeyRequired:false}));}
+  if(url.pathname==='/api/health'||url.pathname==='/health'){res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify({ok:true,mode:'geo-duel-v20.2-render',provider:'KartaView + OpenStreetMap',apiKeyRequired:false}));}
   if(url.pathname==='/api/pano'){
     try{
       const raw=String(url.searchParams.get('url')||'');
@@ -115,7 +126,7 @@ const server=http.createServer(async (req,res)=>{
       const host=u.hostname.toLowerCase();
       if(!(host.endsWith('openstreetcam.org')||host.endsWith('kartaview.org'))) throw new Error('blocked host');
       const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),15000);
-      const r=await fetch(u,{headers:{'User-Agent':'LandmarkDuel/20.1'},signal:ctrl.signal}); clearTimeout(t);
+      const r=await fetch(u,{headers:{'User-Agent':'LandmarkDuel/20.2'},signal:ctrl.signal}); clearTimeout(t);
       if(!r.ok)throw new Error('image HTTP '+r.status);
       const buf=Buffer.from(await r.arrayBuffer());
       res.writeHead(200,{'Content-Type':r.headers.get('content-type')||'image/jpeg','Cache-Control':'public, max-age=3600'});
@@ -126,4 +137,4 @@ const server=http.createServer(async (req,res)=>{
   if(!file.startsWith(PUBLIC))return res.writeHead(403).end(); fs.stat(file,(err,st)=>{if(err||!st.isFile()){res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});fs.createReadStream(file).pipe(res);});
 });
 const wss=new WebSocketServer({server,path:'/ws'});wss.on('connection',ws=>{ws.on('message',m=>handle(ws,m));ws.on('close',()=>{const room=rooms.get(ws.roomCode);const p=room?.players.find(x=>x.id===ws.playerId);if(p){p.ws=null;sendState(room);}});});
-server.listen(PORT,()=>console.log(`Landmark Duel V20.1 running: http://localhost:${PORT}`));
+server.listen(PORT,()=>console.log(`Landmark Duel V20.2 running: http://localhost:${PORT}`));
