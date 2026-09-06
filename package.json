@@ -1,17 +1,16 @@
 {
-  "name": "landmark-duel-v18-render-hosted",
-  "version": "18.0.0",
+  "name": "landmark-duel-v20-geo",
+  "version": "20.0.3",
   "private": true,
-  "description": "Landmark Duel hosted Node.js + WebSocket multiplayer for Render",
-  "engines": { "node": ">=20 <23" },
+  "type": "commonjs",
   "scripts": {
     "start": "node server.js",
-    "test:multiplayer": "node TEST_MULTIPLAYER.js",
-    "test:v17": "node TEST_V17_STATIC.js",
-    "test:v18": "node TEST_V18_RENDER.js"
+    "check": "node --check server.js && node --check public/app.js"
   },
   "dependencies": {
-    "node-edge-tts": "1.2.10",
-    "ws": "8.21.3"
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
