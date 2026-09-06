@@ -39,7 +39,7 @@ function normalizedPhoto(p){
   if(!url && p.fileurl) url=String(p.fileurl).replace('[[sizeprefix]]','wrapped_proc');
   return {id:String(p.id||''),sequenceId:String(p.sequenceId||p.sequence?.id||''),sequenceIndex:Number(p.sequenceIndex||0),lat:Number(p.lat),lng:Number(p.lng),heading:Number(p.heading||0),url,projection,fov};
 }
-async function fetchJson(url){ const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),10000); try{const r=await fetch(url,{headers:{'User-Agent':'LandmarkDuel/20.0.2'},signal:ctrl.signal}); if(!r.ok)throw new Error('HTTP '+r.status); return await r.json();} finally{clearTimeout(t);} }
+async function fetchJson(url){ const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),10000); try{const r=await fetch(url,{headers:{'User-Agent':'LandmarkDuel/20.1'},signal:ctrl.signal}); if(!r.ok)throw new Error('HTTP '+r.status); return await r.json();} finally{clearTimeout(t);} }
 async function loadKartaPage(){
   const seq=KARTAVIEW_SEQUENCES[Math.floor(Math.random()*KARTAVIEW_SEQUENCES.length)];
   const page=1+Math.floor(Math.random()*16);
@@ -107,7 +107,7 @@ function handle(ws,msg){
 
 const server=http.createServer(async (req,res)=>{
   const url=new URL(req.url,'http://localhost');
-  if(url.pathname==='/api/health'||url.pathname==='/health'){res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify({ok:true,mode:'geo-duel-v20.0.3-render',provider:'KartaView + OpenStreetMap',apiKeyRequired:false}));}
+  if(url.pathname==='/api/health'||url.pathname==='/health'){res.writeHead(200,{'Content-Type':'application/json','Cache-Control':'no-store'});return res.end(JSON.stringify({ok:true,mode:'geo-duel-v20.1-render',provider:'KartaView + OpenStreetMap',apiKeyRequired:false}));}
   if(url.pathname==='/api/pano'){
     try{
       const raw=String(url.searchParams.get('url')||'');
@@ -115,7 +115,7 @@ const server=http.createServer(async (req,res)=>{
       const host=u.hostname.toLowerCase();
       if(!(host.endsWith('openstreetcam.org')||host.endsWith('kartaview.org'))) throw new Error('blocked host');
       const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),15000);
-      const r=await fetch(u,{headers:{'User-Agent':'LandmarkDuel/20.0.3'},signal:ctrl.signal}); clearTimeout(t);
+      const r=await fetch(u,{headers:{'User-Agent':'LandmarkDuel/20.1'},signal:ctrl.signal}); clearTimeout(t);
       if(!r.ok)throw new Error('image HTTP '+r.status);
       const buf=Buffer.from(await r.arrayBuffer());
       res.writeHead(200,{'Content-Type':r.headers.get('content-type')||'image/jpeg','Cache-Control':'public, max-age=3600'});
@@ -126,4 +126,4 @@ const server=http.createServer(async (req,res)=>{
   if(!file.startsWith(PUBLIC))return res.writeHead(403).end(); fs.stat(file,(err,st)=>{if(err||!st.isFile()){res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});fs.createReadStream(file).pipe(res);});
 });
 const wss=new WebSocketServer({server,path:'/ws'});wss.on('connection',ws=>{ws.on('message',m=>handle(ws,m));ws.on('close',()=>{const room=rooms.get(ws.roomCode);const p=room?.players.find(x=>x.id===ws.playerId);if(p){p.ws=null;sendState(room);}});});
-server.listen(PORT,()=>console.log(`Landmark Duel V20.0.3 running: http://localhost:${PORT}`));
+server.listen(PORT,()=>console.log(`Landmark Duel V20.1 running: http://localhost:${PORT}`));
