@@ -20,3 +20,5 @@ header{justify-content:flex-start}.topHud{position:absolute;left:50%;top:8px;tra
 /* V21.4 visual-only patch: country HUD shows flag only. */
 #p1Country,#p2Country{font-size:30px;line-height:1.05;letter-spacing:0}
 #countryReveal{font-size:38px;line-height:1.1}
+/* V21.6 — real Google Maps/Street View + image flags */
+.countryFlag{display:block;width:48px;height:32px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px #0008}.fighterRight .countryFlag{margin-left:auto}.globeFlag{font-size:30px}.countryReveal .countryFlag,#countryReveal .countryFlag{width:72px;height:48px;margin:0 auto 8px}.bad{color:#ff9b9b!important;background:#3b1717!important}.gm-style{font-family:Arial,sans-serif}.mapPanel #guessMap,#resultMap{background:#e5e3df}
