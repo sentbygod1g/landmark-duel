@@ -20,5 +20,20 @@ header{justify-content:flex-start}.topHud{position:absolute;left:50%;top:8px;tra
 /* V21.4 visual-only patch: country HUD shows flag only. */
 #p1Country,#p2Country{font-size:30px;line-height:1.05;letter-spacing:0}
 #countryReveal{font-size:38px;line-height:1.1}
-/* V21.6 — real Google Maps/Street View + image flags */
-.countryFlag{display:block;width:48px;height:32px;object-fit:cover;border-radius:4px;box-shadow:0 2px 8px #0008}.fighterRight .countryFlag{margin-left:auto}.globeFlag{font-size:30px}.countryReveal .countryFlag,#countryReveal .countryFlag{width:72px;height:48px;margin:0 auto 8px}.bad{color:#ff9b9b!important;background:#3b1717!important}.gm-style{font-family:Arial,sans-serif}.mapPanel #guessMap,#resultMap{background:#e5e3df}
+
+
+/* V21.5 — locked V21.4 multiplayer, visual-only panorama/map upgrade */
+#street,.pnlm-container,.pnlm-render-container,.pnlm-render-container canvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important}
+.pnlm-container{overflow:hidden!important;background:#0b0d12!important}
+.pnlm-render-container canvas{object-fit:cover}
+/* KartaView 360 frames can contain unphotographed zenith/nadir. Keep camera inside photographed sphere so black caps never enter play. */
+.pnlm-about-msg,.pnlm-load-box{display:none!important}
+#mapToggle{right:24px;bottom:24px;width:150px;height:96px;border-radius:12px;background:rgba(255,255,255,.96);color:#111;border:3px solid #fff;box-shadow:0 4px 18px #0008;padding:0;overflow:hidden}
+#mapToggle:before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,#cfe9c4 0 28%,#e7e3d1 28% 47%,#bcd8ef 47% 61%,#d6e8c8 61%);opacity:.95}
+#mapToggle span,#mapToggle b{position:relative;z-index:1;text-shadow:0 1px 2px #fff}
+#mapToggle span{font-size:28px}#mapToggle b{font-size:12px;color:#111;background:#fff;padding:4px 9px;border-radius:12px}
+.mapPanel{right:18px;bottom:18px;width:min(760px,68vw);height:min(610px,76vh);padding:0;border-radius:12px;background:#fff;border:3px solid #fff;box-shadow:0 12px 45px #000b;overflow:hidden}
+.mapPanel #guessMap{height:calc(100% - 66px);border-radius:9px 9px 0 0;background:#e9e7df}
+.mapPanel #guessBtn{height:58px;margin:4px 6px;width:calc(100% - 12px);border-radius:9px;background:#7d2ae8;font-size:20px;letter-spacing:1px}
+.leaflet-container{background:#e9e7df!important}.leaflet-control-attribution{background:rgba(255,255,255,.8)!important;color:#555!important}
+@media(max-width:800px){.mapPanel{left:6px;right:6px;bottom:6px;width:auto;height:72vh}.mapPanel #guessMap{height:calc(100% - 62px)}#mapToggle{width:120px;height:80px}}
