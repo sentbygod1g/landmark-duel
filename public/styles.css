@@ -17,6 +17,6 @@ header{justify-content:flex-start}.topHud{position:absolute;left:50%;top:8px;tra
 .leaflet-container{font-family:Arial,sans-serif}.leaflet-control-zoom a{background:#111827e8!important;color:#fff!important;border-color:#374151!important}.leaflet-marker-icon{filter:drop-shadow(0 3px 3px #0007)}
 .result{background:rgba(6,9,16,.94);backdrop-filter:blur(12px)}
 @media(max-width:800px){#mapToggle{right:10px;bottom:18px;width:92px;height:68px}.mapPanel{left:8px;right:8px;bottom:8px;width:auto;height:68vh}.roadNav{bottom:18px}.fighter{top:82px}}
-
-/* V21.3 — country is represented by flag only */
-.fighterInfo>span{font-size:30px;line-height:1.05;margin:4px 0 7px;letter-spacing:0}.countryReveal{font-size:42px;line-height:1.1}
+/* V21.4 visual-only patch: country HUD shows flag only. */
+#p1Country,#p2Country{font-size:30px;line-height:1.05;letter-spacing:0}
+#countryReveal{font-size:38px;line-height:1.1}
